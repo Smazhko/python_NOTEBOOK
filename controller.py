@@ -55,7 +55,7 @@ def opening_file():
 
 def show_all_notes():
     view.cls()
-    print(phrases.sortMode(model.fieldToSort - 1).rjust(109))
+    view.print_dialogue(phrases.sortMode(model.fieldToSort - 1).rjust(109))
     model.sort_notes_by(model.fieldToSort)
     view.print_notes(model.notes)
 

@@ -17,8 +17,12 @@ colorSuccess = coloredConsole.ANSI_BRIGHT_GREEN
 colorSuccessSign = colorSuccess + coloredConsole.ANSI_BOLD
 colorSuccessText = colorDefault + colorSuccess + coloredConsole.ANSI_ITALIC
 
-colorTitle   = coloredConsole.ANSI_YELLOW + coloredConsole.ANSI_BOLD
+colorTitle   = coloredConsole.ANSI_BRIGHT_YELLOW + coloredConsole.ANSI_BOLD
 colorBorder  = coloredConsole.ANSI_BRIGHT_BLUE
+
+colorDialogue  = coloredConsole.ANSI_ITALIC + coloredConsole.ANSI_GREEN
+colorNoteTitle = coloredConsole.ANSI_BOLD + coloredConsole.ANSI_BRIGHT_GREEN
+colorNoteText  = coloredConsole.ANSI_ITALIC
 
 
 def print_title(message): #┌─┐└─┘│
@@ -35,8 +39,12 @@ def print_warning(message):
 def print_message(message):
     print(colorSuccessSign + "[ √ ] " + colorSuccessText + message + colorDefault)
 
+def print_dialogue(message):
+    print(colorSuccessText + message + colorDefault)
+
 def cls():
-    print(coloredConsole.ANSI_CLEARSCREEN)
+    # print(coloredConsole.ANSI_CLEARSCREEN)
+    print("=" * 110)
 
 
 # выбор из меню (принимает список - разные меню, печатает меню в 2 столбика)
@@ -51,7 +59,7 @@ def get_menu_choise(menu: list[str]) -> int:
             print("")
     while True:
         print("." * 70)
-        select = input(phrases.selectMenu)
+        select = input(colorDialogue + phrases.selectMenu + colorDefault)
         if select.isdigit() and 0 < int(select) < menuLength + 1:
             return int(select)
         print_error(phrases.errorSelectMenu(menu))
@@ -62,7 +70,7 @@ def get_new_note() -> dict[str, str]:
     newNote = {}
     print_title(phrases.newNoteMessage)
     for field, message in phrases.inputNote.items():
-        currentInput = input(message).strip()
+        currentInput = input(colorDialogue + message + colorDefault).strip()
         if len(currentInput) == 0:
             newNote[field] = "--"
         else:
@@ -77,10 +85,9 @@ def get_new_note() -> dict[str, str]:
 # редактирование заметки, пустой ввод - оставить без изменений, коррекция только editTime
 def get_edited_note(oldNote: dict[str, str]) -> dict[str, str]:
     editedNote = {}
-    print_title(phrases.editNoteTitle)
     print(phrases.editNoteInstruction)
     for field, message in phrases.inputNote.items():
-        currentInput = input(message).strip()
+        currentInput = input(colorDialogue + message + colorDefault).strip()
         if len(currentInput) == 0:
             editedNote[field] = oldNote[field]
         else:
@@ -88,14 +95,13 @@ def get_edited_note(oldNote: dict[str, str]) -> dict[str, str]:
     currentTime = datetime.now().strftime('%Y.%m.%d, %H:%M:%S')
     editedNote["createTime"] = oldNote["createTime"]
     editedNote["editTime"] = currentTime
-    cls()
     return editedNote
 
 
 # получение поискового запроса
 def get_search_word():    
     while True:
-        searchWord = input(phrases.searchMessage)
+        searchWord = input(colorDialogue + phrases.searchMessage + colorDefault)
         if len(searchWord) == 0:
             print_warning(phrases.emptyRequest)
         else:
@@ -151,12 +157,12 @@ def print_single_note(id: int, note: dict[str: str]):
     # многострочный заголовок заметки
     print("╓" + "─" * (cardWidth + 2) + "╖")            
     for index in range(0, titleLines):
-        print(f"║ {title[index * cardWidth : cardWidth * (index + 1)]:<{cardWidth}} ║")
+        print(f"║ {colorNoteTitle}{title[index * cardWidth : cardWidth * (index + 1)]:<{cardWidth}}{colorDefault} ║")
     print("╟" + "─" * (cardWidth + 2) + "╢")
 
     # многострочный текст заметки
     for index in range(0, textLines):
-        print(f"║ {text[index * cardWidth : cardWidth * (index + 1)]:<{cardWidth}} ║")
+        print(f"║ {colorNoteText}{text[index * cardWidth : cardWidth * (index + 1)]:<{cardWidth}}{colorDefault} ║")
     print("║ " + " " * (cardWidth) + " ║")
     print("║ " + ("ред.: " + editTime).rjust(cardWidth) + " ║")
     print("╙" + "─" * (cardWidth + 2) + "╜")
@@ -165,7 +171,7 @@ def print_single_note(id: int, note: dict[str: str]):
 
 def get_note_id():
     while True:
-        result = input(phrases.searchByID)
+        result = input(colorDialogue + phrases.searchByID + colorDefault)
         if len(result) == 0:
             print_error(phrases.errorEmptyID)
         else:
