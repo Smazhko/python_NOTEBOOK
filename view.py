@@ -43,8 +43,8 @@ def print_dialogue(message):
     print(colorSuccessText + message + colorDefault)
 
 def cls():
-    # print(coloredConsole.ANSI_CLEARSCREEN)
-    print("=" * 110)
+    print(coloredConsole.ANSI_CLEARSCREEN)
+    # print("=" * 110)
 
 
 # выбор из меню (принимает список - разные меню, печатает меню в 2 столбика)
