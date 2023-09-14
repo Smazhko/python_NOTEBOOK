@@ -55,7 +55,7 @@ def add_new_note(newNote: dict[str: str]):
     return newNote['title']
 
 
-# редактирует запись в словаре и возвращает заголовок отредактированной заметки
+# обновлят заметку с конкретным индексом новыми данными и возвращает заголовок отредактированной заметки
 def edit_note(currentID: str, editedNote: dict[str, str]):
     notes[currentID] = editedNote
     return notes[currentID]['title']
@@ -72,36 +72,28 @@ def remove_note(idToRemove) -> str:
 def sort_notes_by(fieldNumber: int):
     global fieldToSort
     global notes
-    if len(notes) == 0:
-        return {}
-    match fieldNumber:
-        case 1: # ID
-            return dict(sorted(notes.items()))
-        case 2: # title
-            sortField = 'title'
-        case 3: # text
-            sortField = 'text'
-        case 4: # createTime
-            sortField = 'createTime'
-        case 5: # editTime
-            sortField = 'editTime'
-        case _: # по умолчанию ID
-            return dict(sorted(notes.items()))
-    # создаём временный словарь
-    tempDict = {}
-    # наполняем его парами ID-сортируемое поле
-    for i, note in notes.items():
-        tempDict[i] = note[sortField]
-    # для сортировки применяем метод SORTED, который сортирует с учётом ЛЯМБДЫ 
-    # (она указывает, что сортировать надо по каждому второму полю и ВНЕ зависимости от регистра символов upper())
-    # и возвращает СПИСОК КОРТЕЖЕЙ, который снова превращаем в СЛОВАРЬ
-    tempDict = dict(sorted(tempDict.items(), key=lambda i: i[1].upper())) 
-    # формируем новый отсортированный словарь на основании ID из tempDict и данных их словаря-источника NOTES
-    sortedNotes = {}
-    for i, field in tempDict.items():
-        sortedNotes[i] = notes[i]
     # обновляем глобальную переменную, чтобы сортировки в последующем были такими же
     fieldToSort = fieldNumber
-    # обновляем глобальный словарь. теперь он отсортирован
-    notes = sortedNotes
-            
+    if len(notes) != 0:
+        match fieldNumber:
+            case 1: # 1 и по умолчанию - ID. объяснение по оформуле - ниже
+                sortedNotes = dict(sorted(notes.items(), key=lambda i: int(i[0])))
+            case 2: # title
+                sortField = 'title'
+            case 3: # text
+                sortField = 'text'
+            case 4: # createTime
+                sortField = 'createTime'
+            case 5: # editTime
+                sortField = 'editTime'
+        if 2 <= fieldNumber <= 5:
+        # для сортировки применяем метод SORTED, который сортирует с учётом ЛЯМБДЫ 
+        # и возвращает СПИСОК КОРТЕЖЕЙ, который снова превращаем в СЛОВАРЬ.
+        # ЛЯМБДА указывает, что сортировать надо по каждому второму члену каждого из кортежей (индекс 1).
+        # каждое второе поле - это словарь - содержимое заметки.
+        # указываем на необходимое поле внутреннего словаря (заголовок, текст и т.д.) для сортировки
+        # upper() - приведение к верхнему регистру - даёт возможность сортировки ВНЕ зависимости от регистра символов
+            sortedNotes = dict(sorted(notes.items(), key = lambda i: i[1][sortField].upper())) 
+        
+        # обновляем глобальный словарь. теперь он отсортирован
+        notes = sortedNotes

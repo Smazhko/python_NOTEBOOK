@@ -5,29 +5,30 @@ from datetime import datetime
 
 colorDefault = coloredConsole.ANSI_DEFAULT
 
-colorError   = coloredConsole.ANSI_BRIGHT_RED
+colorError     = coloredConsole.ANSI_BRIGHT_RED
 colorErrorSign = colorError + coloredConsole.ANSI_BOLD
 colorErrorText = colorDefault + colorError + coloredConsole.ANSI_ITALIC
 
-colorWarning   = coloredConsole.ANSI_BRIGHT_PURPLE
+colorWarning     = coloredConsole.ANSI_BRIGHT_PURPLE
 colorWarningSign = colorWarning + coloredConsole.ANSI_BOLD
 colorWarningText = colorDefault + colorWarning + coloredConsole.ANSI_ITALIC
 
-colorSuccess = coloredConsole.ANSI_BRIGHT_GREEN
+colorSuccess     = coloredConsole.ANSI_BRIGHT_GREEN
 colorSuccessSign = colorSuccess + coloredConsole.ANSI_BOLD
 colorSuccessText = colorDefault + colorSuccess + coloredConsole.ANSI_ITALIC
 
-colorTitle   = coloredConsole.ANSI_BRIGHT_YELLOW + coloredConsole.ANSI_BOLD
-colorBorder  = coloredConsole.ANSI_BRIGHT_BLUE
+colorDialogue    = coloredConsole.ANSI_ITALIC + coloredConsole.ANSI_GREEN
+colorTitle       = coloredConsole.ANSI_BRIGHT_YELLOW + coloredConsole.ANSI_BOLD
+colorTitleBorder = coloredConsole.ANSI_BRIGHT_BLUE
+colorSortedField = coloredConsole.ANSI_YELLOW + coloredConsole.ANSI_BOLD
 
-colorDialogue  = coloredConsole.ANSI_ITALIC + coloredConsole.ANSI_GREEN
 colorNoteTitle = coloredConsole.ANSI_BOLD + coloredConsole.ANSI_BRIGHT_GREEN
 colorNoteText  = coloredConsole.ANSI_ITALIC
 
 
 def print_title(message): #┌─┐└─┘│
-    print(colorBorder + "╓" + "─" * (len(message) + 2) + "╖")
-    print("║ " + colorTitle + message + colorBorder + " ║")
+    print(colorTitleBorder + "╓" + "─" * (len(message) + 2) + "╖")
+    print("║ " + colorTitle + message + colorTitleBorder + " ║")
     print("╙" + "─" * (len(message) + 2) + "╜" + colorDefault)
 
 def print_error(message):
@@ -109,12 +110,23 @@ def get_search_word():
 
 
 # печать заметок (всех или из поискового запроса)
-def print_notes(data: dict[int, dict[str: str]]):
+def print_notes(data: dict[int, dict[str: str]], sortedField: int):
     if len(data) != 0:
         idField         = max([len(str(item)) for item in data.keys()]) + 2
         titleField      = max([len(item['title']) for item in data.values()]) #максимальная из списка длин полей NAME
         textField       = max([len(item['text']) for item in data.values()])
         createTimeField = editTimeField = 20
+        colorSorted = []
+        signSorted = []
+
+        for i in range(1, 6):
+            if i == sortedField:
+                colorSorted.append(colorSortedField)
+                signSorted.append("▼ ") # ▼ ↓
+            else:
+                colorSorted.append(colorDefault)
+                signSorted.append("")
+
         if titleField < len(phrases.titleTitle) + 1:
             titleField = len(phrases.titleTitle) + 2
         elif titleField > 25:
@@ -125,8 +137,11 @@ def print_notes(data: dict[int, dict[str: str]]):
         elif textField > 35:
             textField = 35
         print("┌" + "─" * idField + "┬" + "─" * titleField + "┬" + "─" * textField + "┬" + "─" * createTimeField + "┬" + "─" * editTimeField + "┐")
-        print("│" + phrases.titleID.center(idField) + "│" + phrases.titleTitle.center(titleField) + "│" + phrases.titleText.center(textField) +
-               "│" + phrases.titleDateCreate.center(createTimeField) + "│"+ phrases.titleDateEdit.center(editTimeField) + "│")
+        print("│" + colorSorted[0] + (signSorted[0] + phrases.titleID).center(idField) + colorDefault +
+              "│" + colorSorted[1] + (signSorted[1] + phrases.titleTitle).center(titleField) + colorDefault +
+              "│" + colorSorted[2] + (signSorted[2] + phrases.titleText).center(textField) + colorDefault +
+              "│" + colorSorted[3] + (signSorted[3] + phrases.titleDateCreate).center(createTimeField) + colorDefault +
+              "│" + colorSorted[4] + (signSorted[4] + phrases.titleDateEdit).center(editTimeField) + colorDefault + "│")
         print("├" + "─" * idField + "┼" + "─" * titleField + "┼" + "─" * textField + "┼" + "─" * createTimeField + "┼" + "─" * editTimeField +"┤")
         for i, note in data.items():
             if len(note['title']) > titleField:

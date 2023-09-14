@@ -23,7 +23,7 @@ def start_menu():
                 view.cls()
                 searchResult = searching_note()
                 if len(searchResult) != 0:
-                    view.print_notes(searchResult)
+                    view.print_notes(searchResult, model.fieldToSort)
                     one_note_working(searchResult)
             case 5: # настройки сортировки
                 view.cls()                
@@ -57,7 +57,7 @@ def show_all_notes():
     view.cls()
     view.print_dialogue(phrases.sortMode(model.fieldToSort - 1).rjust(109))
     model.sort_notes_by(model.fieldToSort)
-    view.print_notes(model.notes)
+    view.print_notes(model.notes, model.fieldToSort)
 
 
 def searching_note():
